@@ -40,20 +40,17 @@ Gain full control over your syntax tree, and release your full 10xer potential b
 
 ## Installation
 
-Scheme 2-D is based on [Chez Scheme](https://cisco.github.io/ChezScheme/). To install Scheme 2-D, first install Chez Scheme, then clone this GitHub repository. 
-
-The `scheme2d` script at the top level of this project contains the entire compiler, with no local dependencies. So, as long as you have the Chez Scheme `scheme-script` utility present in your `/bin`, you may freely move `scheme2d` to any other directory.
+This Scheme 2-D is based on [Racket](https://racket-lang.org/). To install Scheme 2-D, first install Racket, then install this package,
+by cloning and running `raco pkg install` in the directory.
 
 ## How To Use
 
-```
-scheme2d <filename>
-```
-Simply run `scheme2d` on the Scheme 2-D source file you wish to run, and it will interpret it.
+Put `#lang scheme2d <lang>` as the first line of your file, replacing `<lang>` with something like `racket` that recognises s-expressions.
+Then run normally using `racket`.
 
 ## How It Works
 
-Scheme 2-D is an alternative two-dimensional syntax for Chez Scheme. Horizontal parentheses have been replaced with angle brackets (`<` and `>`), and vertical "parentheses" have been introduced with the tokens `^` and `v`.
+Scheme 2-D is an alternative two-dimensional syntax for Scheme. Horizontal parentheses have been replaced with angle brackets (`<` and `>`), and vertical "parentheses" have been introduced with the tokens `^` and `v`.
 
 Top-level expressions are parsed horizontally, but must start at column 0: 
 
@@ -122,4 +119,4 @@ If you have any interest in helping to improve the compiler and have way too muc
 
 ### *How do I support continued development of Scheme 2-D?*
 
-Please follow me on [Twitter](https://twitter.com/elucentdev) and give this project lots of GitHub Stars to provide me with moral support.
+Please follow the original author on [Twitter](https://twitter.com/elucentdev) and give the original project lots of GitHub Stars to provide them with moral support.
