@@ -1,2 +1,4 @@
+#lang scheme2d racket
+
 <display "hello world">
 <newline>

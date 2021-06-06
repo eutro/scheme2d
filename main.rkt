@@ -1,5 +1,5 @@
-#!/bin/scheme-script
-(import (chezscheme))
+#!/usr/bin/env racket
+#lang racket
 
 ; please don't judge too harshly...i am terrible at writing scheme...
 
@@ -10,12 +10,10 @@
         ((or (eof-object? ch) (eq? ch #\newline)) (list->vector (reverse acc)))))
 
 ; returns a vector of vectors representing the lines of the source file
-(define (matrix-from filename)
-    (define file (open-input-file filename))
+(define (matrix-from port)
     (define lines 
-        (do ((acc '() (cons (read-row-from file) acc)))
-            ((eof-object? (peek-char file)) (list->vector (reverse acc)))))
-    (close-input-port file)
+        (do ((acc '() (cons (read-row-from port) acc)))
+            ((eof-object? (peek-char port)) (list->vector (reverse acc)))))
     lines)
 
 ; returns the character at the provided x and y in the matrix, or #f if out of bounds
@@ -91,27 +89,31 @@
                 (set! expr (string-append expr " " (car param)))))
         (car (read-horiz-param matrix (skip-space-horiz matrix x y) y)))) ; read single parameter
 
-; parses a string into a scheme list
-(define (parse str)
-    (read (open-input-string str)))
-
 ; returns scheme code parsed from the provided matrix, or #f if any errors occur
 (define (parse-matrix matrix)
     (do ((i 0 (+ i 1))
-         (exprs '() 
+         (exprs '()
             (if (eq? (matrix-at matrix 0 i) #\<) 
-                (cons (parse (read-horiz matrix 0 i)) exprs)
+                (let ([expr (read-horiz matrix 0 i)])
+                  (if (string=? expr "()") exprs (cons expr exprs)))
                 exprs)))
         ((= i (vector-length matrix)) 
-            (cons 'begin (reverse (remove null? exprs))))))
+         (string-join (reverse exprs) "\n"))))
 
-; main program behavior
-(if (null? (cdr (command-line)))
-    (begin ; print program help
-        (display "USAGE: ")
-        (display (car (command-line)))
-        (display " <filename>")
-        (newline))
-    (let ((source (matrix-from (cadr (command-line))))) ; open source from first command-line argument
-        (let ((code (parse-matrix source)))
-            (eval code))))
+(module* reader #f
+  (require syntax/module-reader)
+  (provide (rename-out [read-syntax-scheme2d read-syntax]
+                       [read-scheme2d read]
+                       [get-info-scheme2d get-info]))
+  (define-values (read-scheme2d read-syntax-scheme2d get-info-scheme2d)
+    (make-meta-reader
+     'scheme2d
+     "language path"
+     lang-reader-module-paths
+     (lambda (read-fn)
+       (lambda ([in (current-input-port)])
+         (read-fn (open-input-string (parse-matrix (matrix-from in))))))
+     (lambda (read-fn)
+       (lambda (src in . args)
+         (apply read-fn src (open-input-string (parse-matrix (matrix-from in))) args)))
+     identity)))
