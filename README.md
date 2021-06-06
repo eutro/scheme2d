@@ -1,4 +1,4 @@
-# Introducing ***Scheme 2-D***
+# Introducing ***Scheme 2-D*** for Racket
 
 Are you ever bored by other Lisp dialects? Do s-expressions feel flat and lifeless to you? Have you ever been worried you're not getting your money's worth out of the space bar on your keyboard?
 
